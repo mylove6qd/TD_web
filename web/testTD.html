@@ -102,5 +102,10 @@
     }, function () {
         td.removeRendererEventFromName(plane.name);
     });
+
+    var loadFBXModel = td.loadFBXModel("model/bird1.FBX");
+    loadFBXModel.then((result)=>{
+        td.addToScene(result);
+    });
 </script>
 </html>
