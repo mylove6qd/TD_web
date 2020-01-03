@@ -190,12 +190,10 @@ class TD {
         //窗口自动变化
         window.addEventListener('resize', TD.prototype._handleWindowResize.bind(this), false);
         //渲染
-
         this.render3D();
         //-----------------------------------------------------------------初始化-------------------------------------------------------------------------
     }
 }
-
 //-----------------------------------------------------------------其他方法-------------------------------------------------------------------------
 //添加Object3D的事件监听
 TD.prototype._addMouseListener = function (obj) {
@@ -266,18 +264,43 @@ TD.prototype._addMouseListener = function (obj) {
         raycaster.setFromCamera(mouse, obj.camera);
         let intersects = raycaster.intersectObjects(obj.scene.children, true);
         if (intersects.length > 0) {
-            // 拿到射线第一个照射到的物体
-            //是否是测试
-            if (obj._isTest == true) {
-                for (var i = 0; i < intersects.length; i++) {
-                    console.log('dblclick--' + i, intersects[i].object);
+            //只要在组上设置了点击事件 组中所有对象的点击事件都会被覆盖
+            //所以我们会把第一个取到的元素的有点击事件的组触发
+            //后面会触发有穿透点击事件的组触发
+
+            //强如intersects中保存带有该事件的最高层元素或组
+            //第一个 带有点击事件的
+            //后面的 带有点击穿透事件的
+
+            var array = new Array();
+            for (var i = 0; i < intersects.length; i++) {
+                var callChainToScenc = TD.prototype._callChainToScenc(intersects[i].object);
+                if (i==0){
+                    for (let j = 0; j <callChainToScenc.length; j++) {
+                        if (callChainToScenc[j].hasOwnProperty('_dblclick')){
+                            array.push(callChainToScenc[j]);
+                            break;
+                        }else{
+                            array.push(callChainToScenc[j]);
+                        }
+                    }
+                }else{
+                    for (let j = 0; j <callChainToScenc.length; j++) {
+                        if (callChainToScenc[j].hasOwnProperty('_dblclickThrough')){
+                            array.push(callChainToScenc[j]);
+                            break;
+                        }else{
+                            array.push(callChainToScenc[j]);
+                        }
+                    }
                 }
             }
+            // 拿到射线第一个照射到的物体
             //判断第一个是否有单击事件
-            intersects[0].object._dblclick && intersects[0].object._dblclick(event);
             //判断后面是否有穿透事件
-            for (var i = 1; i < intersects.length; i++) {
-                intersects[i].object._dblclickThrough && intersects[i].object._dblclickThrough(event);
+            for (var i = 0; i < array.length; i++) {
+                array[0]._dblclick && array[0]._dblclick(event);
+                if (i>0) {array[i]._dblclickThrough && array[i]._dblclickThrough(event)};
             }
         }
     });
@@ -365,7 +388,25 @@ TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
     if (different.length == 0) {
         return;
     }
-
+    //如果是一帧内没有检测到
+if (different.length==oldRayObjs.length){
+    var tag = true;
+    for (let i = 0; i < different.length; i++) {
+        if (different[i]!=oldRayObjs[i]){
+            tag==false;
+        }
+    }
+    if (tag){
+        oldRayObjs.forEach((item,index)=>{
+            if (item.hasOwnProperty('_mouseleaveThrough')) {
+                item._mouseleaveThrough();
+            }
+            if (item.hasOwnProperty('_mouseleave')) {
+                item._mouseleave();
+            }
+        })
+    }
+}
     different.forEach((item, index) => {
         //不在旧数组中    新添加
         if (oldRayObjs.indexOf(item) == -1) {
@@ -405,11 +446,14 @@ TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
                 if (oldRayObjs.length > 1 && oldRayObjs[1].hasOwnProperty('_mouseleaveThrough')) {
                     oldRayObjs[1]._mouseleaveThrough();
                 }
-
             } else {
                 //如果这个元素不是第一个 则触发他的穿透
                 if (item.hasOwnProperty('_mouseleaveThrough')) {
                     item._mouseleaveThrough();
+                }
+                //如果是一帧内没有检测到
+                if (item.hasOwnProperty('_mouseleave')) {
+                    item._mouseleave();
                 }
             }
         }

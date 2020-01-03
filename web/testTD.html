@@ -124,6 +124,9 @@
                 this.rotation.y += 0.01;
             },'bird1_an')
         });
+        result.dblclick(function () {
+           td.removeRendererEventFromName('bird1_an');
+        });
         td.addToScene(result);
         // group.add(result);
     });
