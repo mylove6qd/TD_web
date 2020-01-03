@@ -232,7 +232,6 @@ TD.prototype._addMouseListener = function (obj) {
                             if (j==callChainToScenc.length-1){
                                 array.push(callChainToScenc[j]);
                             }
-
                         }
                     }
                 }else{
@@ -241,7 +240,9 @@ TD.prototype._addMouseListener = function (obj) {
                             array.push(callChainToScenc[j]);
                             break;
                         }else{
-                            array.push(callChainToScenc[j]);
+                            if (j==callChainToScenc.length-1){
+                                array.push(callChainToScenc[j]);
+                            }
                         }
                     }
                 }
@@ -295,7 +296,9 @@ TD.prototype._addMouseListener = function (obj) {
                             array.push(callChainToScenc[j]);
                             break;
                         }else{
-                            array.push(callChainToScenc[j]);
+                            if (j==callChainToScenc.length-1){
+                                array.push(callChainToScenc[j]);
+                            }
                         }
                     }
                 }
@@ -385,35 +388,6 @@ TD.prototype._callChainToScenc = function(obj){
     return array.reverse();
 };
 TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
-    // var array = new Array();
-    // for (var i = 0; i < oldRayObjs.length; i++) {
-    //     var callChainToScenc = TD.prototype._callChainToScenc(oldRayObjs[i]);
-    //         for (let j = 0; j <callChainToScenc.length; j++) {
-    //             if (callChainToScenc[j].hasOwnProperty('_mouseenter')||callChainToScenc[j].hasOwnProperty('_mouseleave')
-    //                 ||callChainToScenc[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')){
-    //                 array.push(callChainToScenc[j]);
-    //             }else{
-    //                 array.push(callChainToScenc[j]);
-    //             }
-    //         }
-    // }
-    // oldRayObjs =  array;
-    //
-    //
-    // var array1 = new Array();
-    // for (var i = 0; i < newRayObjs.length; i++) {
-    //     var callChainToScenc1 = TD.prototype._callChainToScenc(newRayObjs[i]);
-    //     for (let j = 0; j <callChainToScenc1.length; j++) {
-    //         if (callChainToScenc1[j].hasOwnProperty('_mouseenter')||callChainToScenc1[j].hasOwnProperty('_mouseleave')
-    //             ||callChainToScenc1[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc1[j].hasOwnProperty('_mouseleaveThrough')){
-    //             array.push(callChainToScenc1[j]);
-    //         }else{
-    //             array.push(callChainToScenc1[j]);
-    //         }
-    //     }
-    // }
-    // newRayObjs =  array1;
-
 
 
 
@@ -423,10 +397,80 @@ TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
     var different = oldRayObjs.concat(newRayObjs).filter(function (v, i, arr) {
         return arr.indexOf(v) === arr.lastIndexOf(v);
     });
+
+
+
+
+
     //没有改变的元素
     if (different.length == 0) {
         return;
     }
+
+
+
+    var array = new Array();
+    for (var i = 0; i < oldRayObjs.length; i++) {
+        var callChainToScenc = TD.prototype._callChainToScenc(oldRayObjs[i]);
+        for (let j = 0; j <callChainToScenc.length; j++) {
+            if (callChainToScenc[j].hasOwnProperty('_mouseenter')||callChainToScenc[j].hasOwnProperty('_mouseleave')
+                ||callChainToScenc[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')){
+                array.push(callChainToScenc[j]);
+                break;
+            }else{
+                if (j==callChainToScenc.length-1) {
+                    array.push(callChainToScenc[j]);
+                }
+            }
+        }
+    }
+    oldRayObjs =  array;
+
+    var array1 = new Array();
+    for (var i = 0; i < newRayObjs.length; i++) {
+        var callChainToScenc1 = TD.prototype._callChainToScenc(newRayObjs[i]);
+
+        for (let j = 0; j <callChainToScenc1.length; j++) {
+
+            if (callChainToScenc1[j].hasOwnProperty('_mouseenter')||callChainToScenc1[j].hasOwnProperty('_mouseleave')
+                ||callChainToScenc1[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc1[j].hasOwnProperty('_mouseleaveThrough')){
+                array1.push(callChainToScenc1[j]);
+                break;
+            }else{
+                if (j==callChainToScenc1.length-1) {
+                    array.push(callChainToScenc1[j]);
+                }
+            }
+        }
+        console.log(array1);
+    }
+
+
+    newRayObjs =  array1;
+    //  console.log(newRayObjs);
+
+
+
+
+    var array = new Array();
+    for (var i = 0; i < different.length; i++) {
+        var callChainToScenc = TD.prototype._callChainToScenc(different[i]);
+
+        for (let j = 0; j <callChainToScenc.length; j++) {
+            if (callChainToScenc[j].hasOwnProperty('_mouseenter')||callChainToScenc[j].hasOwnProperty('_mouseleave')
+                ||callChainToScenc[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')){
+                array.push(callChainToScenc[j]);
+                break;
+            }else{
+                if (j==callChainToScenc.length-1) {
+                    array.push(callChainToScenc[j]);
+                }
+            }
+        }
+    }
+    different =  array;
+
+
     //如果是一帧内没有检测到
 if (different.length==oldRayObjs.length){
     var tag = true;
@@ -524,14 +568,7 @@ THREE.Object3D.prototype.click = function (fn) {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click")
-                ||obj.hasOwnProperty("_clickThrough")
-            ||obj.hasOwnProperty("_dblclick")
-                ||obj.hasOwnProperty("_dblclickThrough")
-                ||obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough")
-                ||obj.hasOwnProperty("_mouseleave")
-                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+            if ((obj.hasOwnProperty("_click"))&&obj.type=='Group'){
                 //delete obj._click;
                 return;
             }
@@ -550,14 +587,7 @@ THREE.Object3D.prototype.clickThrough = function (fn) {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click")
-                ||obj.hasOwnProperty("_clickThrough")
-                ||obj.hasOwnProperty("_dblclick")
-                ||obj.hasOwnProperty("_dblclickThrough")
-                ||obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough")
-                ||obj.hasOwnProperty("_mouseleave")
-                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+            if ((obj.hasOwnProperty("_clickThrough"))&&obj.type=='Group'){
                 //delete obj._click;
                 return;
             }
@@ -576,14 +606,8 @@ THREE.Object3D.prototype.dblclick = function (fn) {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click")
-                ||obj.hasOwnProperty("_clickThrough")
-                ||obj.hasOwnProperty("_dblclick")
-                ||obj.hasOwnProperty("_dblclickThrough")
-                ||obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough")
-                ||obj.hasOwnProperty("_mouseleave")
-                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+            if ((obj.hasOwnProperty("_dblclick")
+                )&&obj.type=='Group'){
                 //delete obj._click;
                 return;
             }
@@ -602,14 +626,8 @@ THREE.Object3D.prototype.dblclickThrough = function (fn) {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click")
-                ||obj.hasOwnProperty("_clickThrough")
-                ||obj.hasOwnProperty("_dblclick")
-                ||obj.hasOwnProperty("_dblclickThrough")
-                ||obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough")
-                ||obj.hasOwnProperty("_mouseleave")
-                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+            if ((obj.hasOwnProperty("_dblclickThrough")
+               )&&obj.type=='Group'){
                 //delete obj._click;
                 return;
             }
@@ -628,14 +646,9 @@ THREE.Object3D.prototype.hover = function (mouseenter, mouseleave) {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click")
-                ||obj.hasOwnProperty("_clickThrough")
-                ||obj.hasOwnProperty("_dblclick")
-                ||obj.hasOwnProperty("_dblclickThrough")
-                ||obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough")
-                ||obj.hasOwnProperty("_mouseleave")
-                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+            if ((obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough"))
+               &&obj.type=='Group'){
                 //delete obj._click;
                 return;
             }
@@ -654,13 +667,7 @@ THREE.Object3D.prototype.hoverThrough = function (mouseenter, mouseleave) {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click")
-                ||obj.hasOwnProperty("_clickThrough")
-                ||obj.hasOwnProperty("_dblclick")
-                ||obj.hasOwnProperty("_dblclickThrough")
-                ||obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough")
-                ||obj.hasOwnProperty("_mouseleave")
+            if ((obj.hasOwnProperty("_mouseleave")
                 ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
                 //delete obj._click;
                 return;

@@ -119,16 +119,23 @@
     });
     var loadFBXModel = td.loadFBXModel("model/bird1.FBX");
     loadFBXModel.then((result)=>{
-        group.click(function () {
+        // result.click(function () {
+        //     td.addRendererEvent(this, function () {
+        //         this.rotation.y += 0.01;
+        //     },'bird1_an')
+        // });
+        // result.dblclick(function () {
+        //    td.removeRendererEventFromName('bird1_an');
+        // });
+        result.hover(function () {
             td.addRendererEvent(this, function () {
                 this.rotation.y += 0.01;
-            },'bird1_an')
+            },'result_an')
+        }, function () {
+            td.removeRendererEventFromName('result_an');
         });
-        group.dblclick(function () {
-           td.removeRendererEventFromName('bird1_an');
-        });
-        // td.addToScene(result);
-          group.add(result);
+         td.addToScene(result);
+        //   group.add(result);
           });
 
 </script>
