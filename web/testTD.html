@@ -63,14 +63,14 @@
     td.renderer.setClearColor(0xEEEEEE, 1.0);//后面一个参数是阿尔法通道 1表示不透明 0表示透明
     //添加进场景 后面的是名字方便管理
     //添加自然光
-    td.addToScene(ambientLight, 'ambientLight');
-    td.addToScene(plane, 'plane');
-    td.addToScene(plane1, 'plane1');
-    // var group = new THREE.Group();
-    // group.add(plane);
-    // group.add(plane1);
-    // group.add(ambientLight);
-    // td.addToScene(group);
+    // td.addToScene(ambientLight, 'ambientLight');
+    // td.addToScene(plane, 'plane');
+    // td.addToScene(plane1, 'plane1');
+    var group = new THREE.Group();
+    group.add(plane);
+    group.add(plane1);
+    group.add(ambientLight);
+    td.addToScene(group);
     //场景中删除平面
 
     // group.hover(function () {
@@ -119,17 +119,17 @@
     });
     var loadFBXModel = td.loadFBXModel("model/bird1.FBX");
     loadFBXModel.then((result)=>{
-        result.click(function () {
-            td.addRendererEvent(result, function () {
+        group.click(function () {
+            td.addRendererEvent(this, function () {
                 this.rotation.y += 0.01;
             },'bird1_an')
         });
-        result.dblclick(function () {
+        group.dblclick(function () {
            td.removeRendererEventFromName('bird1_an');
         });
-        td.addToScene(result);
-        // group.add(result);
-    });
+        // td.addToScene(result);
+          group.add(result);
+          });
 
 </script>
 </html>

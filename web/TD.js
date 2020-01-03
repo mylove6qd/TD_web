@@ -19,7 +19,6 @@ class TD {
     loadFBXModels = function (urls) {
         //用数组的map映射为新的数组好了
         var fbx_loader = new THREE.FBXLoader();
-
         var promises = urls.map((url) => {
             var promise = new Promise(function (resolve, reject) {
                 fbx_loader.load(url, (object) => {
@@ -230,7 +229,10 @@ TD.prototype._addMouseListener = function (obj) {
                             array.push(callChainToScenc[j]);
                             break;
                         }else{
-                            array.push(callChainToScenc[j]);
+                            if (j==callChainToScenc.length-1){
+                                array.push(callChainToScenc[j]);
+                            }
+
                         }
                     }
                 }else{
@@ -264,6 +266,7 @@ TD.prototype._addMouseListener = function (obj) {
         raycaster.setFromCamera(mouse, obj.camera);
         let intersects = raycaster.intersectObjects(obj.scene.children, true);
         if (intersects.length > 0) {
+            console.log(intersects);
             //只要在组上设置了点击事件 组中所有对象的点击事件都会被覆盖
             //所以我们会把第一个取到的元素的有点击事件的组触发
             //后面会触发有穿透点击事件的组触发
@@ -281,7 +284,9 @@ TD.prototype._addMouseListener = function (obj) {
                             array.push(callChainToScenc[j]);
                             break;
                         }else{
-                            array.push(callChainToScenc[j]);
+                            if (j==callChainToScenc.length-1){
+                                array.push(callChainToScenc[j]);
+                            }
                         }
                     }
                 }else{
@@ -380,6 +385,40 @@ TD.prototype._callChainToScenc = function(obj){
     return array.reverse();
 };
 TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
+    // var array = new Array();
+    // for (var i = 0; i < oldRayObjs.length; i++) {
+    //     var callChainToScenc = TD.prototype._callChainToScenc(oldRayObjs[i]);
+    //         for (let j = 0; j <callChainToScenc.length; j++) {
+    //             if (callChainToScenc[j].hasOwnProperty('_mouseenter')||callChainToScenc[j].hasOwnProperty('_mouseleave')
+    //                 ||callChainToScenc[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')){
+    //                 array.push(callChainToScenc[j]);
+    //             }else{
+    //                 array.push(callChainToScenc[j]);
+    //             }
+    //         }
+    // }
+    // oldRayObjs =  array;
+    //
+    //
+    // var array1 = new Array();
+    // for (var i = 0; i < newRayObjs.length; i++) {
+    //     var callChainToScenc1 = TD.prototype._callChainToScenc(newRayObjs[i]);
+    //     for (let j = 0; j <callChainToScenc1.length; j++) {
+    //         if (callChainToScenc1[j].hasOwnProperty('_mouseenter')||callChainToScenc1[j].hasOwnProperty('_mouseleave')
+    //             ||callChainToScenc1[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc1[j].hasOwnProperty('_mouseleaveThrough')){
+    //             array.push(callChainToScenc1[j]);
+    //         }else{
+    //             array.push(callChainToScenc1[j]);
+    //         }
+    //     }
+    // }
+    // newRayObjs =  array1;
+
+
+
+
+
+
     //不同的元素
     var different = oldRayObjs.concat(newRayObjs).filter(function (v, i, arr) {
         return arr.indexOf(v) === arr.lastIndexOf(v);
@@ -459,16 +498,18 @@ if (different.length==oldRayObjs.length){
         }
     });
 };
+//自定义的方法属性
+TD.prototype.attributes = ['_click','_clickThrough','_dblclick','_dblclickThrough','_mouseenter','_mouseenterThrough','_mouseleave','_mouseleaveThrough'];
 //递归删除方法
 TD.prototype.deletePropertyRecursive=function(obj,name){
     if (obj.type=="Group"){
-        if (obj.hasOwnProperty(name)){
-            delete obj[name];
-        }
-    }else{
         obj.children.forEach((item)=>{
             TD.prototype.deletePropertyRecursive(item,name);
         })
+    }else{
+        if (obj.hasOwnProperty(name)){
+            delete obj[name];
+        }
     }
 };
 //为所有Object3D对象添加事件
@@ -476,13 +517,23 @@ TD.prototype.deletePropertyRecursive=function(obj,name){
 THREE.Object3D.prototype.click = function (fn) {
     if (this.type=="Group"){
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.deletePropertyRecursive(this,"_click");
+        TD.prototype.attributes.forEach(item=>{
+            TD.prototype.deletePropertyRecursive(this,item);
+        });
     }else{
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
         reverse.forEach((obj)=>{
-            if (obj.hasOwnProperty("_click")&&obj.type=='Group'){
-                delete obj._click;
+            if ((obj.hasOwnProperty("_click")
+                ||obj.hasOwnProperty("_clickThrough")
+            ||obj.hasOwnProperty("_dblclick")
+                ||obj.hasOwnProperty("_dblclickThrough")
+                ||obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough")
+                ||obj.hasOwnProperty("_mouseleave")
+                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                //delete obj._click;
+                return;
             }
         })
     }
@@ -490,25 +541,133 @@ THREE.Object3D.prototype.click = function (fn) {
 };
 //点击穿透事件clickThrough
 THREE.Object3D.prototype.clickThrough = function (fn) {
+    if (this.type=="Group"){
+        //如果是组的话 覆盖组内所有元素的此方法
+        TD.prototype.attributes.forEach(item=>{
+            TD.prototype.deletePropertyRecursive(this,item);
+        });
+    }else{
+        //如果不是组的话 覆盖组上所有元素的此方法
+        var reverse = TD.prototype._callChainToScenc(this).reverse();
+        reverse.forEach((obj)=>{
+            if ((obj.hasOwnProperty("_click")
+                ||obj.hasOwnProperty("_clickThrough")
+                ||obj.hasOwnProperty("_dblclick")
+                ||obj.hasOwnProperty("_dblclickThrough")
+                ||obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough")
+                ||obj.hasOwnProperty("_mouseleave")
+                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                //delete obj._click;
+                return;
+            }
+        })
+    }
     this._clickThrough = fn || undefined;
 };
 //双击事件dblclick
 THREE.Object3D.prototype.dblclick = function (fn) {
+    if (this.type=="Group"){
+        //如果是组的话 覆盖组内所有元素的此方法
+        TD.prototype.attributes.forEach(item=>{
+            TD.prototype.deletePropertyRecursive(this,item);
+        });
+    }else{
+        //如果不是组的话 覆盖组上所有元素的此方法
+        var reverse = TD.prototype._callChainToScenc(this).reverse();
+        reverse.forEach((obj)=>{
+            if ((obj.hasOwnProperty("_click")
+                ||obj.hasOwnProperty("_clickThrough")
+                ||obj.hasOwnProperty("_dblclick")
+                ||obj.hasOwnProperty("_dblclickThrough")
+                ||obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough")
+                ||obj.hasOwnProperty("_mouseleave")
+                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                //delete obj._click;
+                return;
+            }
+        })
+    }
     this._dblclick = fn || undefined;
 };
 //双击穿透事件dblclickThrough
 THREE.Object3D.prototype.dblclickThrough = function (fn) {
+    if (this.type=="Group"){
+        //如果是组的话 覆盖组内所有元素的此方法
+        TD.prototype.attributes.forEach(item=>{
+            TD.prototype.deletePropertyRecursive(this,item);
+        });
+    }else{
+        //如果不是组的话 覆盖组上所有元素的此方法
+        var reverse = TD.prototype._callChainToScenc(this).reverse();
+        reverse.forEach((obj)=>{
+            if ((obj.hasOwnProperty("_click")
+                ||obj.hasOwnProperty("_clickThrough")
+                ||obj.hasOwnProperty("_dblclick")
+                ||obj.hasOwnProperty("_dblclickThrough")
+                ||obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough")
+                ||obj.hasOwnProperty("_mouseleave")
+                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                //delete obj._click;
+                return;
+            }
+        })
+    }
     this._dblclickThrough = fn || undefined;
 };
 //hover事件   hover=mouseenter指针进入（穿过）元素 + mouseleave指针离开元素
 THREE.Object3D.prototype.hover = function (mouseenter, mouseleave) {
+    if (this.type=="Group"){
+        //如果是组的话 覆盖组内所有元素的此方法
+        TD.prototype.attributes.forEach(item=>{
+            TD.prototype.deletePropertyRecursive(this,item);
+        });
+    }else{
+        //如果不是组的话 覆盖组上所有元素的此方法
+        var reverse = TD.prototype._callChainToScenc(this).reverse();
+        reverse.forEach((obj)=>{
+            if ((obj.hasOwnProperty("_click")
+                ||obj.hasOwnProperty("_clickThrough")
+                ||obj.hasOwnProperty("_dblclick")
+                ||obj.hasOwnProperty("_dblclickThrough")
+                ||obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough")
+                ||obj.hasOwnProperty("_mouseleave")
+                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                //delete obj._click;
+                return;
+            }
+        })
+    }
     this._mouseenter = mouseenter || undefined;
     this._mouseleave = mouseleave || undefined;
 };
 THREE.Object3D.prototype.hoverThrough = function (mouseenter, mouseleave) {
+    if (this.type=="Group"){
+        //如果是组的话 覆盖组内所有元素的此方法
+        TD.prototype.attributes.forEach(item=>{
+            TD.prototype.deletePropertyRecursive(this,item);
+        });
+    }else{
+        //如果不是组的话 覆盖组上所有元素的此方法
+        var reverse = TD.prototype._callChainToScenc(this).reverse();
+        reverse.forEach((obj)=>{
+            if ((obj.hasOwnProperty("_click")
+                ||obj.hasOwnProperty("_clickThrough")
+                ||obj.hasOwnProperty("_dblclick")
+                ||obj.hasOwnProperty("_dblclickThrough")
+                ||obj.hasOwnProperty("_mouseenter")
+                ||obj.hasOwnProperty("_mouseenterThrough")
+                ||obj.hasOwnProperty("_mouseleave")
+                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                //delete obj._click;
+                return;
+            }
+        })
+    }
     this._mouseenterThrough = mouseenter || undefined;
     this._mouseleaveThrough = mouseleave || undefined;
 };
-//所有对象都可以有多个渲染器事件(支持只Object3D对象 其他对象需要的话在原型方法上加入_rendererEventFn)
-THREE.Object3D.prototype._rendererEventFn = new Map();
 //-----------------------------------------------------------------其他方法-------------------------------------------------------------------------
