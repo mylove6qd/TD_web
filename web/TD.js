@@ -193,6 +193,7 @@ class TD {
         //-----------------------------------------------------------------初始化-------------------------------------------------------------------------
     }
 }
+
 //-----------------------------------------------------------------其他方法-------------------------------------------------------------------------
 //添加Object3D的事件监听
 TD.prototype._addMouseListener = function (obj) {
@@ -223,24 +224,24 @@ TD.prototype._addMouseListener = function (obj) {
             var array = new Array();
             for (var i = 0; i < intersects.length; i++) {
                 var callChainToScenc = TD.prototype._callChainToScenc(intersects[i].object);
-                if (i==0){
-                    for (let j = 0; j <callChainToScenc.length; j++) {
-                        if (callChainToScenc[j].hasOwnProperty('_click')){
+                if (i == 0) {
+                    for (let j = 0; j < callChainToScenc.length; j++) {
+                        if (callChainToScenc[j].hasOwnProperty('_click')) {
                             array.push(callChainToScenc[j]);
                             break;
-                        }else{
-                            if (j==callChainToScenc.length-1){
+                        } else {
+                            if (j == callChainToScenc.length - 1) {
                                 array.push(callChainToScenc[j]);
                             }
                         }
                     }
-                }else{
-                    for (let j = 0; j <callChainToScenc.length; j++) {
-                        if (callChainToScenc[j].hasOwnProperty('_clickThrough')){
+                } else {
+                    for (let j = 0; j < callChainToScenc.length; j++) {
+                        if (callChainToScenc[j].hasOwnProperty('_clickThrough')) {
                             array.push(callChainToScenc[j]);
                             break;
-                        }else{
-                            if (j==callChainToScenc.length-1){
+                        } else {
+                            if (j == callChainToScenc.length - 1) {
                                 array.push(callChainToScenc[j]);
                             }
                         }
@@ -252,7 +253,10 @@ TD.prototype._addMouseListener = function (obj) {
             //判断后面是否有穿透事件
             for (var i = 0; i < array.length; i++) {
                 array[0]._click && array[0]._click(event);
-                if (i>0) {array[i]._clickThrough && array[i]._clickThrough(event)};
+                if (i > 0) {
+                    array[i]._clickThrough && array[i]._clickThrough(event)
+                }
+                ;
             }
         }
     });
@@ -279,24 +283,24 @@ TD.prototype._addMouseListener = function (obj) {
             var array = new Array();
             for (var i = 0; i < intersects.length; i++) {
                 var callChainToScenc = TD.prototype._callChainToScenc(intersects[i].object);
-                if (i==0){
-                    for (let j = 0; j <callChainToScenc.length; j++) {
-                        if (callChainToScenc[j].hasOwnProperty('_dblclick')){
+                if (i == 0) {
+                    for (let j = 0; j < callChainToScenc.length; j++) {
+                        if (callChainToScenc[j].hasOwnProperty('_dblclick')) {
                             array.push(callChainToScenc[j]);
                             break;
-                        }else{
-                            if (j==callChainToScenc.length-1){
+                        } else {
+                            if (j == callChainToScenc.length - 1) {
                                 array.push(callChainToScenc[j]);
                             }
                         }
                     }
-                }else{
-                    for (let j = 0; j <callChainToScenc.length; j++) {
-                        if (callChainToScenc[j].hasOwnProperty('_dblclickThrough')){
+                } else {
+                    for (let j = 0; j < callChainToScenc.length; j++) {
+                        if (callChainToScenc[j].hasOwnProperty('_dblclickThrough')) {
                             array.push(callChainToScenc[j]);
                             break;
-                        }else{
-                            if (j==callChainToScenc.length-1){
+                        } else {
+                            if (j == callChainToScenc.length - 1) {
                                 array.push(callChainToScenc[j]);
                             }
                         }
@@ -308,7 +312,10 @@ TD.prototype._addMouseListener = function (obj) {
             //判断后面是否有穿透事件
             for (var i = 0; i < array.length; i++) {
                 array[0]._dblclick && array[0]._dblclick(event);
-                if (i>0) {array[i]._dblclickThrough && array[i]._dblclickThrough(event)};
+                if (i > 0) {
+                    array[i]._dblclickThrough && array[i]._dblclickThrough(event)
+                }
+                ;
             }
         }
     });
@@ -378,7 +385,7 @@ TD.prototype._EmittedRay = function (obj) {
     return [];
 };
 //子对象到场景的调用链
-TD.prototype._callChainToScenc = function(obj){
+TD.prototype._callChainToScenc = function (obj) {
     var array = new Array();
     array.push(obj);
     while (obj.parent && obj.parent.type !== 'Scene') {
@@ -390,16 +397,10 @@ TD.prototype._callChainToScenc = function(obj){
 TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
 
 
-
-
-
     //不同的元素
     var different = oldRayObjs.concat(newRayObjs).filter(function (v, i, arr) {
         return arr.indexOf(v) === arr.lastIndexOf(v);
     });
-
-
-
 
 
     //没有改变的元素
@@ -408,36 +409,35 @@ TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
     }
 
 
-
     var array = new Array();
     for (var i = 0; i < oldRayObjs.length; i++) {
         var callChainToScenc = TD.prototype._callChainToScenc(oldRayObjs[i]);
-        for (let j = 0; j <callChainToScenc.length; j++) {
-            if (callChainToScenc[j].hasOwnProperty('_mouseenter')||callChainToScenc[j].hasOwnProperty('_mouseleave')
-                ||callChainToScenc[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')){
+        for (let j = 0; j < callChainToScenc.length; j++) {
+            if (callChainToScenc[j].hasOwnProperty('_mouseenter') || callChainToScenc[j].hasOwnProperty('_mouseleave')
+                || callChainToScenc[j].hasOwnProperty('_mouseenterThrough') || callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')) {
                 array.push(callChainToScenc[j]);
                 break;
-            }else{
-                if (j==callChainToScenc.length-1) {
+            } else {
+                if (j == callChainToScenc.length - 1) {
                     array.push(callChainToScenc[j]);
                 }
             }
         }
     }
-    oldRayObjs =  array;
+    oldRayObjs = array;
 
     var array1 = new Array();
     for (var i = 0; i < newRayObjs.length; i++) {
         var callChainToScenc1 = TD.prototype._callChainToScenc(newRayObjs[i]);
 
-        for (let j = 0; j <callChainToScenc1.length; j++) {
+        for (let j = 0; j < callChainToScenc1.length; j++) {
 
-            if (callChainToScenc1[j].hasOwnProperty('_mouseenter')||callChainToScenc1[j].hasOwnProperty('_mouseleave')
-                ||callChainToScenc1[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc1[j].hasOwnProperty('_mouseleaveThrough')){
+            if (callChainToScenc1[j].hasOwnProperty('_mouseenter') || callChainToScenc1[j].hasOwnProperty('_mouseleave')
+                || callChainToScenc1[j].hasOwnProperty('_mouseenterThrough') || callChainToScenc1[j].hasOwnProperty('_mouseleaveThrough')) {
                 array1.push(callChainToScenc1[j]);
                 break;
-            }else{
-                if (j==callChainToScenc1.length-1) {
+            } else {
+                if (j == callChainToScenc1.length - 1) {
                     array.push(callChainToScenc1[j]);
                 }
             }
@@ -446,50 +446,48 @@ TD.prototype._hoverProcess = function (oldRayObjs, newRayObjs) {
     }
 
 
-    newRayObjs =  array1;
+    newRayObjs = array1;
     //  console.log(newRayObjs);
-
-
 
 
     var array = new Array();
     for (var i = 0; i < different.length; i++) {
         var callChainToScenc = TD.prototype._callChainToScenc(different[i]);
 
-        for (let j = 0; j <callChainToScenc.length; j++) {
-            if (callChainToScenc[j].hasOwnProperty('_mouseenter')||callChainToScenc[j].hasOwnProperty('_mouseleave')
-                ||callChainToScenc[j].hasOwnProperty('_mouseenterThrough')||callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')){
+        for (let j = 0; j < callChainToScenc.length; j++) {
+            if (callChainToScenc[j].hasOwnProperty('_mouseenter') || callChainToScenc[j].hasOwnProperty('_mouseleave')
+                || callChainToScenc[j].hasOwnProperty('_mouseenterThrough') || callChainToScenc[j].hasOwnProperty('_mouseleaveThrough')) {
                 array.push(callChainToScenc[j]);
                 break;
-            }else{
-                if (j==callChainToScenc.length-1) {
+            } else {
+                if (j == callChainToScenc.length - 1) {
                     array.push(callChainToScenc[j]);
                 }
             }
         }
     }
-    different =  array;
+    different = array;
 
 
     //如果是一帧内没有检测到
-if (different.length==oldRayObjs.length){
-    var tag = true;
-    for (let i = 0; i < different.length; i++) {
-        if (different[i]!=oldRayObjs[i]){
-            tag==false;
+    if (different.length == oldRayObjs.length) {
+        var tag = true;
+        for (let i = 0; i < different.length; i++) {
+            if (different[i] != oldRayObjs[i]) {
+                tag == false;
+            }
+        }
+        if (tag) {
+            oldRayObjs.forEach((item, index) => {
+                if (item.hasOwnProperty('_mouseleaveThrough')) {
+                    item._mouseleaveThrough();
+                }
+                if (item.hasOwnProperty('_mouseleave')) {
+                    item._mouseleave();
+                }
+            })
         }
     }
-    if (tag){
-        oldRayObjs.forEach((item,index)=>{
-            if (item.hasOwnProperty('_mouseleaveThrough')) {
-                item._mouseleaveThrough();
-            }
-            if (item.hasOwnProperty('_mouseleave')) {
-                item._mouseleave();
-            }
-        })
-    }
-}
     different.forEach((item, index) => {
         //不在旧数组中    新添加
         if (oldRayObjs.indexOf(item) == -1) {
@@ -543,15 +541,15 @@ if (different.length==oldRayObjs.length){
     });
 };
 //自定义的方法属性
-TD.prototype.attributes = ['_click','_clickThrough','_dblclick','_dblclickThrough','_mouseenter','_mouseenterThrough','_mouseleave','_mouseleaveThrough'];
+TD.prototype.attributes = ['_click', '_clickThrough', '_dblclick', '_dblclickThrough', '_mouseenter', '_mouseenterThrough', '_mouseleave', '_mouseleaveThrough'];
 //递归删除方法
-TD.prototype.deletePropertyRecursive=function(obj,name){
-    if (obj.type=="Group"){
-        obj.children.forEach((item)=>{
-            TD.prototype.deletePropertyRecursive(item,name);
+TD.prototype.deletePropertyRecursive = function (obj, name) {
+    if (obj.type == "Group") {
+        obj.children.forEach((item) => {
+            TD.prototype.deletePropertyRecursive(item, name);
         })
-    }else{
-        if (obj.hasOwnProperty(name)){
+    } else {
+        if (obj.hasOwnProperty(name)) {
             delete obj[name];
         }
     }
@@ -559,16 +557,16 @@ TD.prototype.deletePropertyRecursive=function(obj,name){
 //为所有Object3D对象添加事件
 //点击事件click
 THREE.Object3D.prototype.click = function (fn) {
-    if (this.type=="Group"){
+    if (this.type == "Group") {
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.attributes.forEach(item=>{
-            TD.prototype.deletePropertyRecursive(this,item);
+        TD.prototype.attributes.forEach(item => {
+            TD.prototype.deletePropertyRecursive(this, item);
         });
-    }else{
+    } else {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
-        reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_click"))&&obj.type=='Group'){
+        reverse.forEach((obj) => {
+            if ((obj.hasOwnProperty("_click")) && obj.type == 'Group') {
                 //delete obj._click;
                 return;
             }
@@ -578,16 +576,16 @@ THREE.Object3D.prototype.click = function (fn) {
 };
 //点击穿透事件clickThrough
 THREE.Object3D.prototype.clickThrough = function (fn) {
-    if (this.type=="Group"){
+    if (this.type == "Group") {
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.attributes.forEach(item=>{
-            TD.prototype.deletePropertyRecursive(this,item);
+        TD.prototype.attributes.forEach(item => {
+            TD.prototype.deletePropertyRecursive(this, item);
         });
-    }else{
+    } else {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
-        reverse.forEach((obj)=>{
-            if ((obj.hasOwnProperty("_clickThrough"))&&obj.type=='Group'){
+        reverse.forEach((obj) => {
+            if ((obj.hasOwnProperty("_clickThrough")) && obj.type == 'Group') {
                 //delete obj._click;
                 return;
             }
@@ -597,17 +595,17 @@ THREE.Object3D.prototype.clickThrough = function (fn) {
 };
 //双击事件dblclick
 THREE.Object3D.prototype.dblclick = function (fn) {
-    if (this.type=="Group"){
+    if (this.type == "Group") {
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.attributes.forEach(item=>{
-            TD.prototype.deletePropertyRecursive(this,item);
+        TD.prototype.attributes.forEach(item => {
+            TD.prototype.deletePropertyRecursive(this, item);
         });
-    }else{
+    } else {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
-        reverse.forEach((obj)=>{
+        reverse.forEach((obj) => {
             if ((obj.hasOwnProperty("_dblclick")
-                )&&obj.type=='Group'){
+            ) && obj.type == 'Group') {
                 //delete obj._click;
                 return;
             }
@@ -617,17 +615,17 @@ THREE.Object3D.prototype.dblclick = function (fn) {
 };
 //双击穿透事件dblclickThrough
 THREE.Object3D.prototype.dblclickThrough = function (fn) {
-    if (this.type=="Group"){
+    if (this.type == "Group") {
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.attributes.forEach(item=>{
-            TD.prototype.deletePropertyRecursive(this,item);
+        TD.prototype.attributes.forEach(item => {
+            TD.prototype.deletePropertyRecursive(this, item);
         });
-    }else{
+    } else {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
-        reverse.forEach((obj)=>{
+        reverse.forEach((obj) => {
             if ((obj.hasOwnProperty("_dblclickThrough")
-               )&&obj.type=='Group'){
+            ) && obj.type == 'Group') {
                 //delete obj._click;
                 return;
             }
@@ -637,18 +635,18 @@ THREE.Object3D.prototype.dblclickThrough = function (fn) {
 };
 //hover事件   hover=mouseenter指针进入（穿过）元素 + mouseleave指针离开元素
 THREE.Object3D.prototype.hover = function (mouseenter, mouseleave) {
-    if (this.type=="Group"){
+    if (this.type == "Group") {
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.attributes.forEach(item=>{
-            TD.prototype.deletePropertyRecursive(this,item);
+        TD.prototype.attributes.forEach(item => {
+            TD.prototype.deletePropertyRecursive(this, item);
         });
-    }else{
+    } else {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
-        reverse.forEach((obj)=>{
+        reverse.forEach((obj) => {
             if ((obj.hasOwnProperty("_mouseenter")
-                ||obj.hasOwnProperty("_mouseenterThrough"))
-               &&obj.type=='Group'){
+                || obj.hasOwnProperty("_mouseenterThrough"))
+                && obj.type == 'Group') {
                 //delete obj._click;
                 return;
             }
@@ -658,17 +656,17 @@ THREE.Object3D.prototype.hover = function (mouseenter, mouseleave) {
     this._mouseleave = mouseleave || undefined;
 };
 THREE.Object3D.prototype.hoverThrough = function (mouseenter, mouseleave) {
-    if (this.type=="Group"){
+    if (this.type == "Group") {
         //如果是组的话 覆盖组内所有元素的此方法
-        TD.prototype.attributes.forEach(item=>{
-            TD.prototype.deletePropertyRecursive(this,item);
+        TD.prototype.attributes.forEach(item => {
+            TD.prototype.deletePropertyRecursive(this, item);
         });
-    }else{
+    } else {
         //如果不是组的话 覆盖组上所有元素的此方法
         var reverse = TD.prototype._callChainToScenc(this).reverse();
-        reverse.forEach((obj)=>{
+        reverse.forEach((obj) => {
             if ((obj.hasOwnProperty("_mouseleave")
-                ||obj.hasOwnProperty("_mouseleaveThrough"))&&obj.type=='Group'){
+                || obj.hasOwnProperty("_mouseleaveThrough")) && obj.type == 'Group') {
                 //delete obj._click;
                 return;
             }
